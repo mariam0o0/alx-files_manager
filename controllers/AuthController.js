@@ -1,44 +1,39 @@
-import sha1 from 'sha1';
 import { v4 as uuidv4 } from 'uuid';
-import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
+/**
+ * Controller for the index route.
+ * @class AuthController
+ * @method getConnect
+ * @method getDisconnect
+ */
 class AuthController {
-  static async getConnect(request, response) {
-    const authData = request.header('Authorization');
-    let userEmail = authData.split(' ')[1];
-    const buff = Buffer.from(userEmail, 'base64');
-    userEmail = buff.toString('ascii');
-    const data = userEmail.split(':');
-    if (data.length !== 2) {
-      response.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
-    const hashedPassword = sha1(data[1]);
-    const users = dbClient.db.collection('users');
-    users.findOne({ email: data[0], password: hashedPassword }, async (err, user) => {
-      if (user) {
-        const token = uuidv4();
-        const key = `auth_${token}`;
-        await redisClient.set(key, user._id.toString(), 60 * 60 * 24);
-        response.status(200).json({ token });
-      } else {
-        response.status(401).json({ error: 'Unauthorized' });
-      }
-    });
+  /**
+    * Method for the route GET /connect.
+    * Create's a new token in Redis.
+    * @param {object} req - The express request object.
+    * @param {object} res - The express response object.
+    * @returns {object} 200 status code
+    */
+  static async getConnect(req, res) {
+    const token = uuidv4();
+    await redisClient.set(`auth_${token}`, req.user._id.toString(), 24 * 60 * 60);
+
+    return res.status(200).json({ token });
   }
 
-  static async getDisconnect(request, response) {
-    const token = request.header('X-Token');
-    const key = `auth_${token}`;
-    const id = await redisClient.get(key);
-    if (id) {
-      await redisClient.del(key);
-      response.status(204).json({});
-    } else {
-      response.status(401).json({ error: 'Unauthorized' });
-    }
+  /**
+    * Method for the route GET /disconnect.
+    * Deletes the token in Redis.
+    * @param {object} req - The express request object.
+    * @param {object} res - The express response object.
+    * @returns {object} 204 status code
+    */
+  static async getDisconnect(req, res) {
+    const token = req.headers['x-token'];
+
+    await redisClient.del(`auth_${token}`);
+    return res.status(204).send();
   }
 }
-
-module.exports = AuthController;
+export default AuthController;

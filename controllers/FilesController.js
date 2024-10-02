@@ -12,19 +12,10 @@ const mime = require('mime-types');
 
 const fileQueue = new Queue('thumbnail generation');
 
-/**
- * Controller for the index route.
- * @class FilesController
- * @method postUpload
- */
+//Controller for the index route.
 class FilesController {
-  /**
-   * Method for the route POST /files.
-   * Create's a new file in DB and in disk.
-   * @param {object} _req - The express request object.
-   * @param {object} res - The express response object.
-   * @returns {object}
-   */
+
+  //Create's a new file in DB and in disk.
   static async postUpload(req, res) {
     const name = req.body ? req.body.name : null;
     const type = req.body ? req.body.type : null;
@@ -85,13 +76,7 @@ class FilesController {
     });
   }
 
-  /**
-   * Method for the route GET /files/:id
-   * Get's a file by it's ID.
-   * @param {object} req - The express request object.
-   * @param {object} res - The express response object.
-   * @return {object}
-   */
+  //Get's a file by it's ID.
   static async getShow(req, res) {
     const fileId = req.params ? req.params.id : '';
     const file = await dbClient.getFileById(fileId);
@@ -108,13 +93,7 @@ class FilesController {
     });
   }
 
-  /**
-   * Method for the route GET /files/
-   * Get's all files for a user.
-   * @param {object} req - The express request object.
-   * @param {object} res - The express response object.
-   * @return {object} A list of file documents.
-   */
+  //Get's all files for a user.
   static async getIndex(req, res) {
     const parentId = req.query.parentId || 0;
     const userId = req.user._id;
@@ -152,13 +131,7 @@ class FilesController {
     return res.send(filesArray);
   }
 
-  /**
-   * Method for the route PUT /files/:id/publish
-   * Publish a file by it's ID.
-   * @param {object} req - The express request object.
-   * @param {object} res - The express response object.
-   * @return {object}    - The published file.
-   */
+  //Publish a file by it's ID.
   static async putPublish(req, res) {
     const id = req.params.id || '';
     const userId = req.user._id;
@@ -184,13 +157,7 @@ class FilesController {
     });
   }
 
-  /**
-   * Method for the route PUT /files/:id/unpublish
-   * Unpublish a file by it's ID.
-   * @param {object} req - The express request object.
-   * @param {object} res - The express response object.
-   * @return {object}    - The unpublished file.
-   */
+  //Unpublish a file by it's ID.
   static async putUnpublish(req, res) {
     const id = req.params.id || '';
     const userId = req.user ? req.user._id : '';
@@ -217,13 +184,7 @@ class FilesController {
     });
   }
 
-  /**
-   * Method for the route GET /files/:id/data
-   * Get's a file by it's ID.
-   * @param {object} req - The express request object.
-   * @param {object} res - The express response object.
-   * @return {object}    - The file data.
-   */
+  //Get's a file by it's ID.
   static async getFile(req, res) {
     const id = req.params.id || '';
     const size = req.query.size || 0;

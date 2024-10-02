@@ -4,21 +4,10 @@ import dbClient from '../utils/db';
 
 const userQueue = new Queue('email sending');
 
-/**
- * Controller for the index route.
- * @class UsersController
- * @method postNew
- * @method getMe
- */
+//Controller for the index route.
 class UsersController {
-  /**
-   * Method for the route POST /users.
-   * Create a new user in DB.
-   * @param {object} req - The express request object.
-   * @param {object} res - The express response object.
-   * @returns {object} The status code 201 and the new user if successful,
-   *                   400 if missing parameters or 409 if already exist.
-   */
+
+  // Create a new user in DB.
   static async postNew(req, res) {
     const email = req.body ? req.body.email : null;
     const password = req.body ? req.body.password : null;
@@ -42,13 +31,7 @@ class UsersController {
     }
   }
 
-  /**
-   * Method for the route GET /users/me.
-   * Fetches a user in DB.
-   * @param {object} req - The express request object.
-   * @param {object} res - The express response object.
-   * @returns {object} The status code 200 and the user if successful,
-   */
+  //Fetches a user in DB.
   static async getMe(req, res) {
     return res.status(200).json({ id: req.user._id.toString(), email: req.user.email });
   }
